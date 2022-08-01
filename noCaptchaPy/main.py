@@ -16,6 +16,7 @@ from selenium.common.exceptions import (
 
 options = webdriver.ChromeOptions()
 options.add_argument('--no-sandbox')
+options.add_argument('--lang=en_US')
 options.add_argument('--disable-dev-shm-usage')
 
 
@@ -88,66 +89,74 @@ class nocap:
 
                 # printing the response from api server
                 # print(f'Response received from api server {r.text}')
+                try:
 
-                if r.json()['status'] == "new":
-                    time.sleep(2)
-                    status=requests.get(r.json()['url'])
-                    # print(status.json())
-                    if status.json()['status'] == "solved":
-                        # for item in images_div:
-                        #     name=item.get_attribute("aria-label")
-                        #     nn=int(name.replace("Challenge Image ", ""))-1
-                            # print(status.json()['solution'][0])
-                            # if status.json()['solution'][nn]:
-                            #     time.sleep(0.05)
-                            #     item.click()
-                            # for res in status.json()['solution']:
-                            #     print(status.json()['solution'][res])
-                        sol=status.json()['solution']
-                        # r=[]
-                        # for i in sol:
-                        #     if sol[i] == "True":
-                        #         print(sol[i])
-                        #         r.append(int(i))
-                        print(sol)
-                        # for ii in sol:
-                        #     print(ii, type(ii))
-                            # time.sleep(10)
-                        for item in images_div:
-                            name=item.get_attribute("aria-label")
-                            nn=int(name.replace("Challenge Image ", ""))-1
-                            # print(nn)
-                            if nn in sol:
-                                item.click()
 
-                        ## clicking the button
-                        WebDriverWait(driver, 35, ignored_exceptions=ElementClickInterceptedException).until(
-                                EC.element_to_be_clickable(
-                                    (By.XPATH, "//div[@class='button-submit button']"))
-                            ).click()
+                    if r.json()['status'] == "new":
+                        time.sleep(2)
+                        status=requests.get(r.json()['url'])
+                        # print(status.json())
+                        if status.json()['status'] == "solved":
+                            # for item in images_div:
+                            #     name=item.get_attribute("aria-label")
+                            #     nn=int(name.replace("Challenge Image ", ""))-1
+                                # print(status.json()['solution'][0])
+                                # if status.json()['solution'][nn]:
+                                #     time.sleep(0.05)
+                                #     item.click()
+                                # for res in status.json()['solution']:
+                                #     print(status.json()['solution'][res])
+                            sol=status.json()['solution']
+                            # r=[]
+                            # for i in sol:
+                            #     if sol[i] == "True":
+                            #         print(sol[i])
+                            #         r.append(int(i))
+                            print(sol)
+                            # for ii in sol:
+                            #     print(ii, type(ii))
+                                # time.sleep(10)
+                            for item in images_div:
+                                name=item.get_attribute("aria-label")
+                                nn=int(name.replace("Challenge Image ", ""))-1
+                                # print(nn)
+                                if nn in sol:
+                                    item.click()
 
-                        
+                            ## clicking the button
+                            WebDriverWait(driver, 35, ignored_exceptions=ElementClickInterceptedException).until(
+                                    EC.element_to_be_clickable(
+                                        (By.XPATH, "//div[@class='button-submit button']"))
+                                ).click()
 
-                else:
-                    print(r.json())
+                            
+
+                    else:
+                        print(r.json())
+                except Exception as e:
+                    raise Exception(f'Error in api server response {e}')
 
 
                 
                 time.sleep(20)
                 # Clicking the images to solve the captcha
-                if r.json()['success']:
-                    for item in images_div:
-                        name=item.get_attribute("aria-label")
-                        nn=int(name.replace("Challenge Image ", ""))-1
-                        if r.json()['solution'][str(nn)]:
-                            time.sleep(0.05)
-                            item.click()
+                try:
+
+                    if r.json()['success']:
+                        for item in images_div:
+                            name=item.get_attribute("aria-label")
+                            nn=int(name.replace("Challenge Image ", ""))-1
+                            if r.json()['solution'][str(nn)]:
+                                time.sleep(0.05)
+                                item.click()
 
 
-                    time.sleep(20)
-                    WebDriverWait(driver, 35, ignored_exceptions=ElementClickInterceptedException).until(
-                        EC.element_to_be_clickable((By.XPATH, "//div[@class='button-submit button']"))
-                    ).click()
+                        time.sleep(20)
+                        WebDriverWait(driver, 35, ignored_exceptions=ElementClickInterceptedException).until(
+                            EC.element_to_be_clickable((By.XPATH, "//div[@class='button-submit button']"))
+                        ).click()
+                except Exception as e:
+                    raise Exception(f'Error in api server response {e}')
 
                 try:
                     error_txt=WebDriverWait(driver, 1, 0.1).until(
